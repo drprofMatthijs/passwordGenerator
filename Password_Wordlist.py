@@ -1,4 +1,3 @@
-from test import capitalStart
 import pandas as pd
 from random import randrange
 import itertools
@@ -105,7 +104,7 @@ class passwordgenerator:
                 # only numbers
                 for word in self.list:
                     temp = [word]
-                    temp += capitalStart(word)
+                    temp += self.capitalStart(word)
 
                     for option in temp:
                         total.append(option)
@@ -117,7 +116,7 @@ class passwordgenerator:
                 # numbers and last special character substitution
                 for word in self.list:
                     wordtemp = [word]
-                    wordtemp += capitalStart(word)
+                    wordtemp += self.capitalStart(word)
                     for option in wordtemp:
                         temp2 = [option]
                         temp2 += self.onlyLastSpecChar(option)
@@ -132,7 +131,7 @@ class passwordgenerator:
                 # numbers and first AND last special character substitution
                 for word in self.list:
                     wordtemp = [word]
-                    wordtemp += capitalStart(word)
+                    wordtemp += self.capitalStart(word)
 
                     for option in wordtemp:
                         temp2 = [option]
@@ -150,7 +149,7 @@ class passwordgenerator:
                 # numbers and ALL special character substitution
                 for word in self.list:
                     wordtemp = [word]
-                    wordtemp += capitalStart(word)
+                    wordtemp += self.capitalStart(word)
 
                     for option in wordtemp:
                         temp2 = [option]
