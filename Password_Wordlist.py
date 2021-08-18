@@ -1,3 +1,4 @@
+from test import capitalStart
 import pandas as pd
 from random import randrange
 import itertools
@@ -6,7 +7,7 @@ import os
 
 class passwordgenerator:
 
-    def __init__(self, list, complexity, numbers):
+    def __init__(self, list, complexity, numbers, uppercase):
         self.list = list
         self.complexity = complexity # Complexity levels: 1 -> Only add numbers | 2 -> Numbers + one special character | 3 -> Numbers + few special characters | 4 -> Numbers + All special characters
         self.subs = {
@@ -20,6 +21,7 @@ class passwordgenerator:
 
         }
         self.numberlist = self.numberList(numbers)
+        self.uppercase = uppercase
         self.main()
 
     def numberList(self, repeat):
@@ -86,52 +88,124 @@ class passwordgenerator:
 
         return result 
 
+    def capitalStart(self, word):
+        if word[0].isupper() or not word[0].isalpha():
+            return []
+        else:
+            return [word.capitalize()]
+
     def main(self):
         # main function of class
         complexity = self.complexity
-
         total = []
-        if complexity == 1:
-            # only numbers
-            for word in self.list:
-                total.append(word)
-                numbers = self.addNumbers(word)     # add a progress tracker here!!!
-                for num in numbers:
-                    total.append(num)
+        capital = self.uppercase
 
-        if complexity == 2:
-            # numbers and last special character substitution
-            for word in self.list:
-                wordtemp = [word]
-                wordtemp += self.onlyLastSpecChar(word)
-                for passwds in wordtemp:
-                    numbers = self.addNumbers(passwds)
+        if capital:
+            if complexity == 1:
+                # only numbers
+                for word in self.list:
+                    temp = [word]
+                    temp += capitalStart(word)
+
+                    for option in temp:
+                        total.append(option)
+                        numbers = self.addNumbers(option)     # add a progress tracker here!!!
+                        for num in numbers:
+                            total.append(num)
+
+            if complexity == 2:
+                # numbers and last special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += capitalStart(word)
+                    for option in wordtemp:
+                        temp2 = [option]
+                        temp2 += self.onlyLastSpecChar(option)
+                        for passwds in temp2:
+                            total.append(passwds)
+                            numbers = self.addNumbers(passwds)
+                            for num in numbers:
+                                total.append(num)
+
+
+            if complexity == 3:
+                # numbers and first AND last special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += capitalStart(word)
+
+                    for option in wordtemp:
+                        temp2 = [option]
+                        temp2 += self.onlyLastSpecChar(option)
+                        temp2 += self.onlyFirstSpecChar(option)
+                        temp2 = list(dict.fromkeys(temp2))       #remove duplicates occuring from using both onlyLastSpecChar and onlyFirstSpecChar
+
+                        for passwds in temp2:
+                            total.append(passwds)
+                            numbers = self.addNumbers(passwds)
+                            for num in numbers:
+                                total.append(num)
+            
+            if complexity > 3:
+                # numbers and ALL special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += capitalStart(word)
+
+                    for option in wordtemp:
+                        temp2 = [option]
+                        temp2 += self.allSpecialCharacterSub(option)
+                        for passwds in temp2:
+                            total.append(passwds)
+                            numbers = self.addNumbers(passwds)
+                            for num in numbers:
+                                total.append(num)
+
+        else:
+            if complexity == 1:
+                # only numbers
+                for word in self.list:
+                    total.append(word)
+                    numbers = self.addNumbers(word)     # add a progress tracker here!!!
                     for num in numbers:
                         total.append(num)
 
+            if complexity == 2:
+                # numbers and last special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += self.onlyLastSpecChar(word)
+                    for passwds in wordtemp:
+                        total.append(passwds)
+                        numbers = self.addNumbers(passwds)
+                        for num in numbers:
+                            total.append(num)
 
-        if complexity == 3:
-            # numbers and first AND last special character substitution
-            for word in self.list:
-                wordtemp = [word]
-                wordtemp += self.onlyLastSpecChar(word)
-                wordtemp += self.onlyFirstSpecChar(word)
-                wordtemp = list(dict.fromkeys(wordtemp))       #remove duplicates occuring from using both onlyLastSpecChar and onlyFirstSpecChar
 
-                for passwds in wordtemp:
-                    numbers = self.addNumbers(passwds)
-                    for num in numbers:
-                        total.append(num)
-        
-        if complexity > 3:
-            # numbers and ALL special character substitution
-            for word in self.list:
-                wordtemp = [word]
-                wordtemp += self.allSpecialCharacterSub(word)
-                for passwds in wordtemp:
-                    numbers = self.addNumbers(passwds)
-                    for num in numbers:
-                        total.append(num)
+            if complexity == 3:
+                # numbers and first AND last special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += self.onlyLastSpecChar(word)
+                    wordtemp += self.onlyFirstSpecChar(word)
+                    wordtemp = list(dict.fromkeys(wordtemp))       #remove duplicates occuring from using both onlyLastSpecChar and onlyFirstSpecChar
+
+                    for passwds in wordtemp:
+                        total.append(passwds)
+                        numbers = self.addNumbers(passwds)
+                        for num in numbers:
+                            total.append(num)
+            
+            if complexity > 3:
+                # numbers and ALL special character substitution
+                for word in self.list:
+                    wordtemp = [word]
+                    wordtemp += self.allSpecialCharacterSub(word)
+                    for passwds in wordtemp:
+                        total.append(passwds)
+                        numbers = self.addNumbers(passwds)
+                        for num in numbers:
+                            total.append(num)
 
         self.result = total
 
@@ -194,27 +268,37 @@ def main():
                 print()
             else:
                 break
+
+    while True:
+        capital = input("Lastly, do you want to add capital letters to the beginning of every password?" + "\n" 
+        + "\n" + "y/n: ")
+
+        if capital == 'y':
+            capital = True
+            break
+        elif capital == 'n':
+            capital = False
+            break
+        else:
+            print("ERROR: Input has to be 'y' for yes or 'n' for no")
+            print()
+
        
 
-    generator = passwordgenerator(words, int(complexity), int(numbers))
+    generator = passwordgenerator(words, int(complexity), int(numbers), capital)
     passwords = generator.result
     passwordslen = str(len(passwords))
     print()
     print("Done! " + passwordslen + " password were generated.")
     print()
 
-    with open(passwordslen + 'generatedPasswds.txt', 'x') as f:
+    filename = wordListFile.split('.txt')[0] + '_' + passwordslen + 'generatedPasswds.txt'
+
+    with open(filename, 'w') as f:
         pswdList = map(lambda x:x+'\n', passwords)
         f.writelines(pswdList)
-
-    """
-    yesorno = input("Do you want to print the generated wordlist?\ny/n:")
-
-    if yesorno == 'y':
-        print(generator.result)
-    """
-
-# Current directory = os.getcwd()
+    
+    print("The following file has been created:", filename)
 
 
 main()
